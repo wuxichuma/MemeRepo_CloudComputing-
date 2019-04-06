@@ -13,6 +13,7 @@ print(pytesseract.image_to_string(Image.open('jpg3.jpg')))
 
 # French text image to string
 print(pytesseract.image_to_string(Image.open('jpg3.jpg'), lang='chi_sim'))
+#testing
 
 # In order to bypass the image conversions of pytesseract, just use relative or absolute image path
 # NOTE: In this case you should provide tesseract supported images or tesseract will return error
