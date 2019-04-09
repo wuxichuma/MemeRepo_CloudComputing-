@@ -74,6 +74,17 @@ def settings():
         user = helpers.get_user()
         return render_template('settings.html', user=user)
     return redirect(url_for('login'))
+# -------- search ---------------------------------------------------------- #
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    if session.get('logged_in'):
+        if request.method == 'POST':
+            keywords = request.form['keywords']
+            print (keywords)
+            return json.dumps({'status': 'Search successful'})
+        #user = helpers.get_user()
+        return render_template('home.html', user=user)
+    return redirect(url_for('login'))
 
 
 # ======== Main ============================================================== #

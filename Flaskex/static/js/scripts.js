@@ -30,6 +30,7 @@ $(document).ready(function() {
   $(document).keypress(function(e) {if(e.which === 13) {login();}});
   
   $(document).on("click", "#signup-button", function() {
+    
     $.post({
       type: "POST",
       url: "/signup",
@@ -40,6 +41,20 @@ $(document).ready(function() {
         var status = JSON.parse(response)["status"];
         if (status === "Signup successful") { location.reload(); }
         else { message(status, true, "signup-box"); }
+      }
+    });
+  }
+  )
+
+    $(document).on("click", "#search-button", function() {
+    $.post({
+      type: "POST",
+      url: "/home",
+      data: {"keywords": $("#textindex").val()},
+      success(response) {
+        var status = JSON.parse(response)["status"];
+        if (status === "Search successful") { location.reload(); }
+        else { message(status, true, "search-box"); }
       }
     });
   });
