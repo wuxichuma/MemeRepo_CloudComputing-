@@ -5,8 +5,13 @@ from scripts import forms
 from scripts import helpers
 from flask import Flask, redirect, url_for, render_template, request, session
 import json
+import imghdr
+import base64
+#from pydoop import hdfs
+import re
 import sys
 import os
+from Common import Common
 
 
 app = Flask(__name__)
@@ -22,15 +27,29 @@ def login():
             username = request.form['username'].lower()
             password = request.form['password']
             if form.validate():
-                if helpers.credentials_valid(username, password):
+                #if helpers.credentials_valid(username, password):
                     session['logged_in'] = True
                     session['username'] = username
                     return json.dumps({'status': 'Login successful'})
-                return json.dumps({'status': 'Invalid user/pass'})
+                #return json.dumps({'status': 'Invalid user/pass'})
             return json.dumps({'status': 'Both fields required'})
         return render_template('login.html', form=form)
     user = helpers.get_user()
-    return render_template('home.html', user=user)
+    sskey=""
+    if 'keyword' in session:
+        sskey = session["keyword"]
+    simages =""
+    if 'imagePath' in session:
+        if session['imagePath'] != "":
+            imagePath = session['imagePath']
+            print(imagePath)
+            if (sskey==""):
+                return render_template("home.html",user=user)
+            commonF = Common()
+            simages = commonF.sparkSQLReadNFilterList(imagePath,sskey)
+            
+            sskey = "You are searching " + sskey
+    return render_template('home.html', user=user,searchkey=sskey,hists=simages)
 
 
 @app.route("/logout")
@@ -53,6 +72,7 @@ def signup():
                     helpers.add_user(username, password, email)
                     session['logged_in'] = True
                     session['username'] = username
+                    session['keyword'] = ""
                     return json.dumps({'status': 'Signup successful'})
                 return json.dumps({'status': 'Username taken'})
             return json.dumps({'status': 'User/Pass required'})
@@ -80,14 +100,51 @@ def home():
     if session.get('logged_in'):
         if request.method == 'POST':
             keywords = request.form['keywords']
+            session['keyword'] = keywords
+            #filePath = "C:\\Users\\candy\\Documents\\HKU\\Semester2\\COMP7305\\Group Project\\Test code-save and read binary image\\"
+            #filePath = "/home/hduser/MemeRepo_CloudComputing-/Flaskex"
+            #filePath = "hdfs://gpu3:9000/wuxi/04122019203919021146.txt"
+            filePath = "04122019203919021146.txt"
+            session['imagePath'] = filePath
+            keywords= keywords.encode("utf-8").decode("latin1")
             print (keywords)
             return json.dumps({'status': 'Search successful'})
         #user = helpers.get_user()
-        return render_template('home.html', user=user)
+        return render_template('home.html')
     return redirect(url_for('login'))
-
-
+basedir = os.path.abspath(os.path.dirname(__file__)) 
+@app.route('/up_photo', methods=['post'])
+def up_photo():
+    img = request.files.get('photo')
+    #username = request.form.get("name")
+    path = basedir+"/static/photo/"
+    file_path = path+img.filename
+    img.save(file_path)
+    '''
+    encoded_string=""
+    with open(file_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    #print (encoded_string)
+    '''
+    imgType = imghdr.what(file_path)
+    imagebase64 = base64.b64encode(open(file_path,'rb').read())
+    
+    commonF = Common()
+    x=commonF.readImageText(file_path)
+    x=re.sub('\s','',x)
+    sstring = img.filename +"|"+ x + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
+    nowstring=sstring.encode("utf-8").decode("latin1")
+    print (nowstring)
+    file = '04122019203919021146.txt'
+    with open(file, 'a+') as f:
+        f.write(nowstring)
+        f.write('\n')
+        f.close()
+ #   with hdfs.open('hdfs://gpu3:9000/wuxi/04122019203919021146.txt', 'a') as f:
+ #       f.write(nowstring)
+    #return render_template('home.html')
+    return redirect('/')
 # ======== Main ============================================================== #
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)  # Generic key for dev purposes only
-    app.run(debug=True, use_reloader=True)
+    app.run(host='0.0.0.0',debug=True, use_reloader=True)

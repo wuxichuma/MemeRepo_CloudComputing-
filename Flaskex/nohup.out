@@ -1,0 +1,145 @@
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Using TensorFlow backend.
+Traceback (most recent call last):
+  File "app.py", line 113, in <module>
+    app.run(host='0.0.0.0',debug=True, use_reloader=True)
+  File "/home/hduser/.local/lib/python3.6/site-packages/flask/app.py", line 943, in run
+    run_simple(host, port, self, **options)
+  File "/home/hduser/.local/lib/python3.6/site-packages/werkzeug/serving.py", line 968, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Using TensorFlow backend.
+Traceback (most recent call last):
+  File "app.py", line 113, in <module>
+    app.run(host='0.0.0.0',debug=True, use_reloader=True)
+  File "/home/hduser/.local/lib/python3.6/site-packages/flask/app.py", line 943, in run
+    run_simple(host, port, self, **options)
+  File "/home/hduser/.local/lib/python3.6/site-packages/werkzeug/serving.py", line 968, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Using TensorFlow backend.
+Traceback (most recent call last):
+  File "app.py", line 113, in <module>
+    app.run(host='0.0.0.0',debug=True, use_reloader=True)
+  File "/home/hduser/.local/lib/python3.6/site-packages/flask/app.py", line 943, in run
+    run_simple(host, port, self, **options)
+  File "/home/hduser/.local/lib/python3.6/site-packages/werkzeug/serving.py", line 968, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Using TensorFlow backend.
+Traceback (most recent call last):
+  File "app.py", line 113, in <module>
+    app.run(host='0.0.0.0',debug=True, use_reloader=True)
+  File "/home/hduser/.local/lib/python3.6/site-packages/flask/app.py", line 943, in run
+    run_simple(host, port, self, **options)
+  File "/home/hduser/.local/lib/python3.6/site-packages/werkzeug/serving.py", line 968, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Using TensorFlow backend.
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+Using TensorFlow backend.
+ * Debugger is active!
+ * Debugger PIN: 254-982-771
+10.42.2.23 - - [14/Apr/2019 12:24:18] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.42.2.23 - - [14/Apr/2019 12:24:28] "[37mPOST / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:28] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:28] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [14/Apr/2019 12:24:28] "[37mGET /static/css/style.css HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:32] "[37mPOST /home HTTP/1.1[0m" 200 -
+19/04/14 12:24:33 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+10.42.2.23 - - [14/Apr/2019 12:24:38] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:38] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [14/Apr/2019 12:24:38] "[37mGET /static/css/style.css HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:50] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:51] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:24:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [14/Apr/2019 12:24:51] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [14/Apr/2019 12:24:51] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.42.2.23 - - [14/Apr/2019 12:40:26] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 12:41:46] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 14:47:51] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:00:15] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:00:57] "[37mPOST / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:00:57] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:00:59] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:00:59] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:01:11] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:01:11] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:01:22] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:01:22] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:01:24] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [14/Apr/2019 16:01:24] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:54:57] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:54:57] "[37mGET /static/css/style.css HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:54:57] "[37mGET /static/js/scripts.js HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:54:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.42.2.23 - - [15/Apr/2019 07:55:51] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:55:51] "[37mGET /static/css/style.css HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:55:51] "[37mGET /static/js/scripts.js HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:55:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.42.2.23 - - [15/Apr/2019 07:56:22] "[37mPOST /signup HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:56:22] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:56:22] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 07:56:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 07:56:22] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.42.2.23 - - [15/Apr/2019 07:58:22] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:58:23] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 07:58:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 07:58:23] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:00:23] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:00:32] "[32mGET /logout HTTP/1.1[0m" 302 -
+10.42.2.23 - - [15/Apr/2019 08:00:32] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:01:19] "[37mPOST / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:01:19] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:01:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:01:19] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:01:40] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:01:40] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:01:40] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:01:40] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:01:43] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:01:50] "[32mGET /logout HTTP/1.1[0m" 302 -
+10.42.2.23 - - [15/Apr/2019 08:01:50] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:02:00] "[37mPOST / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:02:00] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:02:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:02:00] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:02:05] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:02:05] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 08:02:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 08:02:05] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 09:37:44] "[37mPOST /home HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 09:37:44] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 09:37:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 09:37:44] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+10.42.2.23 - - [15/Apr/2019 09:37:45] "[37mGET / HTTP/1.1[0m" 200 -
+10.42.2.23 - - [15/Apr/2019 09:37:49] "[37mGET / HTTP/1.1[0m" 200 -

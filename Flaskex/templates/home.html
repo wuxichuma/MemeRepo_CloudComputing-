@@ -8,6 +8,7 @@
           <div id="search-box" class="search-box">
             <div class="search-area">
               <h1 class="title">Search</h1>
+
               <div class="field">
                 <p class="control">
                   <input id="textindex" class="input is-success" type="text" placeholder="Keywords">
@@ -16,6 +17,23 @@
              
               <br>
               <a id="search-button" class="form-button button is-primary is-inverted is-outlined">Search</a>
+              <br>
+              <br>
+              <br>
+            <div>
+            <form method="post" action="http://202.45.128.135:10093/up_photo" enctype="multipart/form-data">
+            <input type="file" size="30" name="photo" />
+            <br>
+            <input type="submit" value="Upload" style="margin-top:15px;"/>
+            </form>
+            </div>
+            <br>
+			  <br>
+			  {{searchkey}}
+			  <br>
+			  {% for hist in hists %} 
+                <img src="{{hist}}">
+              {% endfor %}
               <br>
               <br>
               <i><a id="feedback2" class="feedback"></a></i>
@@ -32,3 +50,4 @@
 {% block scripts %}
 <script src="../static/js/scripts.js"></script>
 {% endblock %}
+
