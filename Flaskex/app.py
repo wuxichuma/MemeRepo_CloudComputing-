@@ -3,7 +3,7 @@
 from scripts import tabledef
 from scripts import forms
 from scripts import helpers
-from flask import Flask, redirect, url_for, render_template, request, session
+from flask import jsonify,Flask, redirect, url_for, render_template, request, session
 import json
 import imghdr
 import base64
@@ -113,10 +113,20 @@ def home():
         return render_template('home.html')
     return redirect(url_for('login'))
 basedir = os.path.abspath(os.path.dirname(__file__)) 
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG', 'bmp','gif'])
+ 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 @app.route('/up_photo', methods=['post'])
 def up_photo():
     img = request.files.get('photo')
     #username = request.form.get("name")
+    if (not img):
+        return redirect('/')
+    if not (img and allowed_file(img.filename)):
+        return jsonify({"error": 1001, "msg": "Only support .png .PNG .jpg .JPG .bmp .gif"})
     path = basedir+"/static/photo/"
     file_path = path+img.filename
     img.save(file_path)
@@ -128,10 +138,13 @@ def up_photo():
     '''
     imgType = imghdr.what(file_path)
     imagebase64 = base64.b64encode(open(file_path,'rb').read())
-    
     commonF = Common()
-    x=commonF.readImageText(file_path)
+    if (not commonF.sparkSQLIsRepeat('04122019203919021146.txt',str(imagebase64, 'utf-8'))):
+        return redirect('/') 
+    x=commonF.readImageText(file_path,"all")
     x=re.sub('\s','',x)
+    x=x.replace('\n', '').replace(' ', '').replace('|','')
+    x=("NoTag") if x == "" else (x.lower())
     sstring = img.filename +"|"+ x + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
     nowstring=sstring.encode("utf-8").decode("latin1")
     print (nowstring)
