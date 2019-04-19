@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+from pyspark import SparkContext,SparkConf
+from pyspark.sql import SQLContext
 from scripts import tabledef
 from scripts import forms
 from scripts import helpers
@@ -46,7 +47,7 @@ def login():
             if (sskey==""):
                 return render_template("home.html",user=user)
             commonF = Common()
-            simages = commonF.sparkSQLReadNFilterList(imagePath,sskey)
+            simages = commonF.sprkSQLReadDFtoList(imagePath,sskey)
             
             sskey = "You are searching " + sskey
     return render_template('home.html', user=user,searchkey=sskey,hists=simages)
@@ -104,7 +105,8 @@ def home():
             #filePath = "C:\\Users\\candy\\Documents\\HKU\\Semester2\\COMP7305\\Group Project\\Test code-save and read binary image\\"
             #filePath = "/home/hduser/MemeRepo_CloudComputing-/Flaskex"
             #filePath = "hdfs://gpu3:9000/wuxi/04122019203919021146.txt"
-            filePath = "04122019203919021146.txt"
+            #filePath = "hdfs://gpu3:9000/04122019203919021146.txt"
+            filePath= "hdfs://gpu3:9000/dataFrames/final9"
             session['imagePath'] = filePath
             keywords= keywords.encode("utf-8").decode("latin1")
             print (keywords)
@@ -128,7 +130,8 @@ def up_photo():
     if not (img and allowed_file(img.filename)):
         return jsonify({"error": 1001, "msg": "Only support .png .PNG .jpg .JPG .bmp .gif"})
     path = basedir+"/static/photo/"
-    file_path = path+img.filename
+    imgfilename=img.filename.encode("utf-8").decode("latin1")
+    file_path = path+imgfilename
     img.save(file_path)
     '''
     encoded_string=""
@@ -139,20 +142,29 @@ def up_photo():
     imgType = imghdr.what(file_path)
     imagebase64 = base64.b64encode(open(file_path,'rb').read())
     commonF = Common()
-    if (not commonF.sparkSQLIsRepeat('04122019203919021146.txt',str(imagebase64, 'utf-8'))):
-        return redirect('/') 
+    #if (not commonF.sparkSQLIsRepeat('04122019203919021146.txt',str(imagebase64, 'utf-8'))):
+    #    return redirect('/') 
     x=commonF.readImageText(file_path,"all")
     x=re.sub('\s','',x)
     x=x.replace('\n', '').replace(' ', '').replace('|','')
     x=("NoTag") if x == "" else (x.lower())
     sstring = img.filename +"|"+ x + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
     nowstring=sstring.encode("utf-8").decode("latin1")
+    
+    print("here here here here")
+    conf = SparkConf()#.setAppName("Upload One Image to HDFS").setMaster("yarn")
+    #sc = SparkContext(conf=conf)
+    sc = SparkContext.getOrCreate(conf=conf)
+    sqlContext = SQLContext(sc)
+    
+    uploadedDF = sc.parallelize( [ (img.filename,x,"data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')) ]).toDF(["path","features","binary"])
+    uploadedDF.write.mode('append').parquet("hdfs://gpu3:9000/dataFrames/final9")
     print (nowstring)
-    file = '04122019203919021146.txt'
-    with open(file, 'a+') as f:
-        f.write(nowstring)
-        f.write('\n')
-        f.close()
+    #file = '04122019203919021146.txt'
+    #with open(file, 'a+') as f:
+    #    f.write(nowstring)
+    #    f.write('\n')
+    #    f.close()
  #   with hdfs.open('hdfs://gpu3:9000/wuxi/04122019203919021146.txt', 'a') as f:
  #       f.write(nowstring)
     #return render_template('home.html')

@@ -11,7 +11,7 @@ try:
     from PIL import Image
 except ImportError:
     import Image
-from pyspark import SparkContext
+from pyspark import SparkContext,SparkConf
 from pyspark.sql import SQLContext
 import pyspark.sql.types
 #pip3 install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.1/imageai-2.0.1-py3-none-any.whl 
@@ -19,7 +19,7 @@ import pyspark.sql.types
 from imageai.Detection import ObjectDetection
 #pip install googletrans
 from googletrans import Translator
-#import pillowfight
+import pillowfight
 
 
 class Common():
@@ -81,7 +81,7 @@ class Common():
         #check if file is exists
         exists = os.path.isfile(path)
         if exists:
-            print("*********************")
+            print("File already exists, save failed")
             return 
         
         #save image to local file 
@@ -97,15 +97,16 @@ class Common():
     """
       read the text contains in image
     """        
-    def readImageText(self,imagePath, language):
+    def readImageText(self,imagePath, language = "all"):
         image = Image.open(imagePath)
         image = image.convert("RGB")
+        image = pillowfight.swt(image,output_type=pillowfight.SWT_OUTPUT_ORIGINAL_BOXES)
         return self.extractText(image,language)
     
     """
        read the text contains in image (Base64 format)
     """
-    def readImageBase64Text(self, imageBase64,language):
+    def readImageBase64Text(self, imageBase64,language = "all"):
         image = self.Base64ToImage(imageBase64) 
         image = image.convert("RGB")
 #        image = pillowfight.swt(image,output_type=pillowfight.SWT_OUTPUT_ORIGINAL_BOXES)
@@ -114,13 +115,13 @@ class Common():
     """
        Extract image innertext
     """
-    def extractText(self, image, language):
+    def extractText(self, image, language = "all"):
         text = ""
         try:
             if language == "all":
                 text = pytesseract.image_to_string(image,lang='eng')
-                text = pytesseract.image_to_string(image,lang='chi_sim')
-                text = pytesseract.image_to_string(image,lang='chi_tra')
+                text += pytesseract.image_to_string(image,lang='chi_sim')
+                text += pytesseract.image_to_string(image,lang='chi_tra')
             else:
                 text = pytesseract.image_to_string(image,lang=language)
         except Exception as e:
@@ -196,35 +197,76 @@ class Common():
         #read image one by one and save the innertext in the list
         for file in fileList:
             print("Processing ",str(i)," image: ",file)
-            fullfilePath = os.path.abspath(imageFolderPath.split("\\")[-2]+"\\"+file)
-            imagebase64 = base64.b64encode(open(fullfilePath,'rb').read())
-            
-            #Read the image - inner text and object detection
-            try:
-                #read inner text
-                innerTag = (self.readImageBase64Text(imagebase64,"eng").replace('\n', '').replace(' ', '').replace('|','')) 
-                #read object detection
-                if isObjDetect:
-                    innerTag += (self.readImageBase64Object(imagebase64,detector).replace('\n', '').replace(' ', '').replace('|',''))
-            except Exception as e:
-                print("ProcessImageFolderToTextFile ex " + fullfilePath + ": " + str(e))
-            #if no innertext found, write no tag
-            innerTag = ("NoTag") if innerTag == "" else (innerTag.lower())
-            
-            #image in base64 formate
-            imgType = imghdr.what(fullfilePath)
-            imagebase64 = base64.b64encode(open(fullfilePath,'rb').read())
-            
-            #add to list
-            innertext = file+"|"+ innerTag + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
-            innertexts.append(innertext)
             i+=1
-            if i == 10:
-                break
+            if not (".png" in file.lower() or ".jpg" in file.lower() or ".gif" in file.lower()):
+                print("Image type wrong:",file)
+            else:
+                fullfilePath = os.path.abspath(imageFolderPath.split("\\")[-2]+"\\"+file)
+                imagebase64 = base64.b64encode(open(fullfilePath,'rb').read())
+            
+                #Read the image - inner text and object detection
+                try:
+                    #read inner text
+                    innerTag = (self.readImageBase64Text(imagebase64,"eng").replace('\n', '').replace(' ', '').replace('|','')) 
+                    #read object detection
+                    if isObjDetect:
+                        innerTag += (self.readImageBase64Object(imagebase64,detector).replace('\n', '').replace(' ', '').replace('|',''))
+                except Exception as e:
+                    print("ProcessImageFolderToTextFile ex " + fullfilePath + ": " + str(e))
+                #if no innertext found, write no tag
+                innerTag = ("NoTag") if innerTag == "" else (innerTag.lower())
+            
+                #image in base64 formate
+                imgType = imghdr.what(fullfilePath)
+                imagebase64 = base64.b64encode(open(fullfilePath,'rb').read())
+            
+                #add to list
+                innertext = file+"|"+ innerTag + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
+                innertexts.append(innertext)
+
         
         #write the information into the target file
         with open(savePath + datetime.datetime.now().strftime("%m%d%Y%H%M%S%f")+".txt", 'a',encoding='utf-8') as the_file: 
             the_file.writelines("Image|Tag|Base64\n")
+            for txt in innertexts:
+                the_file.writelines(txt.strip() + '\n')
+                
+    """
+        transfer image folder to text folder
+    """
+    def transferImageFolderToTXT(self, imageFolderPath, savePath, saveFileName = ""):
+        innertexts = []
+        #read all images in image folder
+        fileList = os.listdir(imageFolderPath)
+        i = 1
+        #read image one by one and save the innertext in the list
+        for file in fileList:
+            try:
+                print("Processing ",str(i)," image: ",file)
+                i += 1
+                #only process gif jpg and png file
+                if not (".png" in file.lower() or ".jpg" in file.lower() or ".gif" in file.lower()):
+                    print("Image type wrong:",file)
+                else:
+                
+                    fullfilePath = os.path.abspath(imageFolderPath.split("\\")[-2]+"\\"+file)
+                    imagebase64 = base64.b64encode(open(fullfilePath,'rb').read())
+                    
+                    #image in base64 formate
+                    imgType = imghdr.what(fullfilePath)
+                    imagebase64 = base64.b64encode(open(fullfilePath,'rb').read())
+                    
+                    #add to list
+                    innertext = file + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
+                    innertexts.append(innertext)
+            except Exception as e:
+                print("transferImageFolderToTXT ex: " + str(e))
+        
+        if saveFileName == "":
+            saveFileName = datetime.datetime.now().strftime("%m%d%Y%H%M%S%f")+".txt"
+        #write the information into the target file
+        with open(savePath + saveFileName, 'a',encoding='utf-8') as the_file: 
+#            the_file.writelines("Image|Base64\n")
             for txt in innertexts:
                 the_file.writelines(txt.strip() + '\n')
     
@@ -246,9 +288,9 @@ class Common():
             .schema(
                     pyspark.sql.types.StructType(
                             [
-                                    pyspark.sql.types.StructField("Image",pyspark.sql.types.StringType()),
-                                    pyspark.sql.types.StructField("Tag",pyspark.sql.types.StringType()),
-                                    pyspark.sql.types.StructField("Base64",pyspark.sql.types.StringType())
+                                    pyspark.sql.types.StructField("path",pyspark.sql.types.StringType()),
+                                    pyspark.sql.types.StructField("features",pyspark.sql.types.StringType()),
+                                    pyspark.sql.types.StructField("binary",pyspark.sql.types.StringType())
                                     ]
                             )
                     )\
@@ -263,6 +305,34 @@ class Common():
         #change the format to row
         dfreturn = [str(row.Base64) for row in dflist]
         return dfreturn
+    
+    def sprkSQLReadDFtoList(self, dfPath, searchStr):
+#        finalDatasetPath = "hdfs:///dataFrames/final8"
+        #set the search string
+        
+        searchList = list(str(searchStr).lower().replace(" ",""))
+        searchStr = "%".join(searchList)
+        searchStr = "%"+str(searchStr).lower()+"%"
+        
+        #set the spark context and spark sql
+        conf = SparkConf()#.setAppName("Upload Images to HDFS").setMaster("yarn")
+        #sc = SparkContext(conf=conf)
+        sc = SparkContext.getOrCreate(conf=conf)
+        sqlContext = SQLContext(sc)
+        
+        df = sqlContext.read.parquet(dfPath)
+
+        #filter the data with the search string           
+        df = df.filter(df["features"].like(searchStr))
+        
+        #only output the image base64
+        dflist = df.select('binary').collect()
+        
+        #change the format to row
+        dfreturn = [str(row.binary) for row in dflist]
+        return dfreturn
+
+   
     
     def sparkSQLIsRepeat(self, textFilePath, imageBase64):
         #set the spark context and spark sql
@@ -327,7 +397,21 @@ class Common():
         """
         max_time = time.time() + timeout
         while max_time > time.time():
-            print(max_time)
+#            print(max_time)
             time.sleep(delta)
             return False
-        
+    
+    """
+       Rename all image files
+    """
+    def renameFiles(self, imageFolderPath):
+        fileList = os.listdir(imageFolderPath)
+        intTime = int(datetime.datetime.now().strftime("%Y%m%d%H%M%S%f"))
+        for file in fileList:
+            
+            if (".jpg" in file or ".png" in file or ".gif" in file):
+                old_file = os.path.join(imageFolderPath, file)
+                newFileName = str(intTime) + "." + file.split(".")[-1]
+                new_file = os.path.join(imageFolderPath, newFileName)
+                os.rename(old_file, new_file)
+                intTime -=1
