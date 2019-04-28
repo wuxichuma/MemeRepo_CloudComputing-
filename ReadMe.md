@@ -86,4 +86,5 @@ python3 app.py
 ![image](search.jpeg)
 
 7. Upload a meme 
+
 ![image](upload.jpeg)
