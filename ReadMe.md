@@ -77,10 +77,10 @@ python3 app.py
 ```
 
 ## 4. Visit localhost:5000 
-![image](images/homepage.jpeg)
+![image](homepage.jpeg)
 5. Sign up and login
-![image](images/signup.jpeg)
+![image](signup.jpeg)
 6. Search for memes
-![image](images/search.jpeg)
+![image](search.jpeg)
 7. Upload a meme 
-![image](images/upload.jpeg)
+![image](upload.jpeg)
