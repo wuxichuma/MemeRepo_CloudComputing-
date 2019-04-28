@@ -19,7 +19,7 @@ import pyspark.sql.types
 from imageai.Detection import ObjectDetection
 #pip install googletrans
 from googletrans import Translator
-#import pillowfight
+import pillowfight
 
 
 class Common():

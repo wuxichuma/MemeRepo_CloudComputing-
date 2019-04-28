@@ -59,7 +59,7 @@ For other OS versions, please see:
 2. Install packages
 
 ```
-pip3 install -r requirment.txt
+pip3 install -r requirement.txt
 ```
 
 For installing imageAI:

@@ -59,7 +59,7 @@ def credentials_valid(username, password):
         user = s.query(tabledef.User).filter(tabledef.User.username.in_([username])).first()
         if user:
             npassword=password.encode('utf8')
-            return bcrypt.checkpw(npassword, user.password.encode('utf8'))
+            return bcrypt.checkpw(npassword, user.password)
         else:
             return False
 
