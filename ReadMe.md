@@ -18,7 +18,7 @@ For normal users:
 
 1. Login gpu3 with password:student
 2. su hduser password:student
-2. cd ~/newmeme/Flaskex
+2. cd ~/MemeRepo_CloudComputing-/Flaskex
 3. python3 app8.py
 4. Visit http://202.45.128.135:20703/ 
 
