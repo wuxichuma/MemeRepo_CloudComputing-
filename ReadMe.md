@@ -76,11 +76,15 @@ pip3 install https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/resn
 python3 app.py
 ```
 
-## 4. Visit localhost:5000 
+4. Visit localhost:5000 
 ![image](homepage.jpeg)
+
 5. Sign up and login
 ![image](signup.jpeg)
+
 6. Search for memes
 ![image](search.jpeg)
+
 7. Upload a meme 
+
 ![image](upload.jpeg)
