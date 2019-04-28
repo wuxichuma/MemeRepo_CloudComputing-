@@ -24,20 +24,32 @@ dataFrameUrl = "hdfs://gpu3:9000/dataFrames/final8"
 # -------- Login ------------------------------------------------------------- #
 @app.route('/', methods=['GET', 'POST'])
 def login():
+
+    '''
+    Login check
+    '''
     if not session.get('logged_in'):
         form = forms.LoginForm(request.form)
         if request.method == 'POST':
             username = request.form['username'].lower()
             password = request.form['password']
             if form.validate():
-                #if helpers.credentials_valid(username, password):
+                if helpers.credentials_valid(username, password):
                     session['logged_in'] = True
                     session['username'] = username
                     return json.dumps({'status': 'Login successful'})
-                #return json.dumps({'status': 'Invalid user/pass'})
+                return json.dumps({'status': 'Invalid user/pass'})
             return json.dumps({'status': 'Both fields required'})
         return render_template('login.html', form=form)
     user = helpers.get_user()
+
+    '''
+    Return memems from HDFS
+
+    Common.py is our core libray written by ourselves to use SparkSQL or do inner-text dection 
+    Common.py can be seen in .../Flaskex/
+    '''
+
     sskey=""
     if 'keyword' in session:
         sskey = session["keyword"]
@@ -49,8 +61,9 @@ def login():
             if (sskey==""):
                 return render_template("home.html",user=user)
             commonF = Common()
+            # Common is written by ourselves to run SparkSQL
             simages = commonF.sprkSQLReadDFtoList(imagePath,sskey)
-            
+            # sprkSQLReadDFtoList is to get images from hdfs using SparkSQL
             sskey = "You are searching " + sskey
     return render_template('home.html', user=user,searchkey=sskey,hists=simages)
 
@@ -64,6 +77,11 @@ def logout():
 # -------- Signup ---------------------------------------------------------- #
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+
+    '''
+    For new user to sign up, nothing interesting
+    '''
+
     if not session.get('logged_in'):
         form = forms.LoginForm(request.form)
         if request.method == 'POST':
@@ -86,6 +104,11 @@ def signup():
 # -------- Settings ---------------------------------------------------------- #
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+
+    '''
+    Nothing interesting
+    '''
+
     if session.get('logged_in'):
         if request.method == 'POST':
             password = request.form['password']
@@ -97,18 +120,20 @@ def settings():
         user = helpers.get_user()
         return render_template('settings.html', user=user)
     return redirect(url_for('login'))
+
+
+    
 # -------- search ---------------------------------------------------------- #
 @app.route('/home', methods=['GET', 'POST'])
 def home():
+    '''
+    Get keywords from webpage and save it into session, then redirect to other page to do searching
+    '''
     if session.get('logged_in'):
         if request.method == 'POST':
             keywords = request.form['keywords']
             session['keyword'] = keywords
-            #filePath = "C:\\Users\\candy\\Documents\\HKU\\Semester2\\COMP7305\\Group Project\\Test code-save and read binary image\\"
-            #filePath = "/home/hduser/MemeRepo_CloudComputing-/Flaskex"
-            #filePath = "hdfs://gpu3:9000/wuxi/04122019203919021146.txt"
-            #filePath = "hdfs://gpu3:9000/04122019203919021146.txt"
-            filePath= dataFrameUrl                                              #"hdfs://gpu3:9000/dataFrames/final9"
+            filePath= dataFrameUrl       #hdfs://gpu3:9000/dataFrames/final8"                                       
             session['imagePath'] = filePath
             keywords= keywords.encode("utf-8").decode("latin1")
             print (keywords)
@@ -116,62 +141,82 @@ def home():
         #user = helpers.get_user()
         return render_template('home.html')
     return redirect(url_for('login'))
+
+
+
 basedir = os.path.abspath(os.path.dirname(__file__)) 
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG', 'bmp','gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG', 'bmp','gif','jpeg','JPEG'])
  
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/up_photo', methods=['post'])
 def up_photo():
+
+    '''
+    For uploading photo into HDFS
+
+    '''
+
+
     img = request.files.get('photo')
-    #username = request.form.get("name")
+    #Get photo from webpage
+
     if (not img):
         return redirect('/')
     if not (img and allowed_file(img.filename)):
         return jsonify({"error": 1001, "msg": "Only support .png .PNG .jpg .JPG .bmp .gif"})
+
+    '''
+    If not supported images, return error
+    
+    ''' 
+
     path = basedir+"/static/photo/"
     imgfilename=img.filename.encode("utf-8").decode("latin1")
     file_path = path+imgfilename
     img.save(file_path)
+
+
     '''
-    encoded_string=""
-    with open(file_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read())
-    #print (encoded_string)
+    Save the image in local directory 
     '''
+
     imgType = imghdr.what(file_path)
     imagebase64 = base64.b64encode(open(file_path,'rb').read())
     commonF = Common()
-    #if (not commonF.sparkSQLIsRepeat('04122019203919021146.txt',str(imagebase64, 'utf-8'))):
-    #    return redirect('/') 
     x=commonF.readImageText(file_path,"all")
+
+    '''
+    Get type, inner-text and base64 of that image 
+
+    '''
+
+
+
     x=re.sub('\s','',x)
     x=x.replace('\n', '').replace(' ', '').replace('|','')
     x=("NoTag") if x == "" else (x.lower())
     sstring = img.filename +"|"+ x + "|data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')
     nowstring=sstring.encode("utf-8").decode("latin1")
     
-    print("here here here here")
     conf = SparkConf()#.setAppName("Upload One Image to HDFS").setMaster("yarn")
     #sc = SparkContext(conf=conf)
     sc = SparkContext.getOrCreate(conf=conf)
     sqlContext = SQLContext(sc)
     
     uploadedDF = sc.parallelize( [ (img.filename,x,"data:image/" +imgType+";base64," + str(imagebase64, 'utf-8')) ]).toDF(["path","features","binary"])
-    uploadedDF.write.mode('append').parquet(dataFrameUrl)                        #("hdfs://gpu3:9000/dataFrames/final9")
+    uploadedDF.write.mode('append').parquet(dataFrameUrl)  #("hdfs://gpu3:9000/dataFrames/final8")
+
+    '''
+    Save it into HDFS 
+    '''
     print (nowstring)
-    #file = '04122019203919021146.txt'
-    #with open(file, 'a+') as f:
-    #    f.write(nowstring)
-    #    f.write('\n')
-    #    f.close()
- #   with hdfs.open('hdfs://gpu3:9000/wuxi/04122019203919021146.txt', 'a') as f:
- #       f.write(nowstring)
-    #return render_template('home.html')
     return redirect('/')
+
+
 # ======== Main ============================================================== #
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)  # Generic key for dev purposes only
-    app.run(host='0.0.0.0',debug=True, use_reloader=True)
+    app.run(host='0.0.0.0',debug=True, use_reloader=True) #If you want to run locally, just remove the " host:'0.0.0.0' "
